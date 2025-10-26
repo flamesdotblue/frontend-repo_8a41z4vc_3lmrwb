@@ -1,28 +1,48 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import HeroCover from './components/HeroCover';
+import AuthPanel from './components/AuthPanel';
+import MessageAndLinks from './components/MessageAndLinks';
+import StoriesSection from './components/StoriesSection';
+
+const loadMessage = () => {
+  try {
+    const raw = localStorage.getItem('mainMessage');
+    return raw || '';
+  } catch {
+    return '';
+  }
+};
+
+const saveMessage = (text) => {
+  localStorage.setItem('mainMessage', text);
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [role, setRole] = useState('guest');
+  const [message, setMessageState] = useState('');
+
+  useEffect(() => {
+    setMessageState(loadMessage());
+  }, []);
+
+  const setMessage = (text) => {
+    setMessageState(text);
+    saveMessage(text);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
+    <div className="min-h-screen w-full bg-gradient-to-b from-white to-gray-50 text-gray-900">
+      <HeroCover message={message} />
+      <AuthPanel role={role} onChange={setRole} />
+      <MessageAndLinks role={role} message={message} setMessage={setMessage} />
+      <StoriesSection role={role} />
+      <footer className="mx-auto mt-16 max-w-6xl px-6 pb-16 text-center text-sm text-gray-500">
+        <p>
+          Built with love. “But God demonstrates his own love for us in this: While we were still sinners, Christ died for us.” — Romans 5:8
         </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
-        </div>
-      </div>
+      </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
